@@ -1,15 +1,14 @@
 # 12V to 5V Synchronous Buck Converter
 
-A 5V, 3A synchronous buck converter built around the Renesas ISL6545A voltage-mode PWM controller with external MOSFETs.
+A 5V, 3A synchronous buck converter built around the Renesas ISL6545A voltage-mode PWM controller with external MOSFETs, designed end to end in KiCad.
 
-I've designed buck converters before, so the goal here wasn't the converter itself. It was to get comfortable with the full KiCad workflow on a circuit I already understand: schematic capture, making a custom symbol, footprint and 3D model assignment, layout, routing on two layers, DRC, and generating fabrication outputs.
+I took this board from schematic capture through a custom controller symbol, footprint and 3D model assignment, two-layer placement and routing, DRC, and fabrication outputs. Most of the design effort went into the layout decisions that make or break a switching converter: the hot loop, the switch node, the ground plane, and the feedback path.
 
-**Status:** Designed and DRC-clean. Not yet fabricated or tested.
+**Status:** Designed and DRC-clean. Not yet fabricated or tested. The plan for bring-up is at the end of this page.
 
+<!-- Add a KiCad 3D render here once exported (View > 3D Viewer > File > Export Current View as PNG):
 ![Front render](images/render_front.png)
-![Back render](images/render_back.png)
-
-Schematic: [docs/schematic.pdf](docs/schematic.pdf)
+-->
 
 ## Specs
 
@@ -39,7 +38,7 @@ The switch node copper is only wide where load current actually flows (Q1 source
 J1 feeds the bulk cap (C7) first and then the FETs, so the bulk capacitor sits in the current path rather than on a side branch.
 
 ### Compensation
-The datasheet's typical application shows Type II compensation, but with a low-ESR polymer output cap the ESR zero sits too high for Type II to give comfortable phase margin across part tolerances. I added R3 and C5 across the upper feedback resistor to make it Type III, which is what the datasheet recommends for general use. Values follow the datasheet procedure and were checked with a simplified loop model (crossover roughly 30 to 80kHz, phase margin above 70° in the model). This still needs to be confirmed with a load step once the board is built.
+The datasheet's typical application shows Type II compensation, but with a low-ESR polymer output cap the ESR zero sits too high for Type II to give comfortable phase margin across part tolerances. I added R3 and C5 across the upper feedback resistor to make it Type III, which is what the datasheet recommends for general use. Values follow the datasheet's design procedure. Stability still needs to be confirmed with a load step once the board is built.
 
 ### Output voltage and remote sensing
 Vout = 0.6V x (1 + 2.2k / 300) = 5.0V. The top of the feedback divider connects to J2's +5V pad with its own trace (a Kelvin connection), so the converter regulates the voltage at the output terminal and no load current flows through the sense path.
@@ -80,13 +79,12 @@ The bottom layer is a solid GND plane. Top-side ground pads drop to it through v
 
 ## Repository layout
 
-- `/` KiCad project, schematic, PCB, and the custom ISL6545A symbol library
-- `/3d` STEP models that aren't in the default KiCad library
-- `/fabrication` Gerbers and drill files (zipped)
-- `/docs` schematic PDF
-- `/images` renders
+- `Buck Converter.kicad_pro`, `.kicad_sch`, `.kicad_pcb`: KiCad project, schematic and PCB
+- `controller_symbol.kicad_sym`: custom ISL6545A symbol
+- `gerbers/`: Gerber and drill files for fabrication
+- `3D Files/`: STEP models that aren't in the default KiCad library
 
-## If I built a v2
+## Next steps
 
 - Fabricate and verify: switch node ringing, load-step response, efficiency and FET temperatures at 3A
 - Re-orient U1 to get PHASE away from FB
