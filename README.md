@@ -6,9 +6,7 @@ I took this board from schematic capture through a custom controller symbol, foo
 
 **Status:** Designed and DRC-clean. Not yet fabricated or tested. The plan for bring-up is at the end of this page.
 
-<!-- Add a KiCad 3D render here once exported (View > 3D Viewer > File > Export Current View as PNG):
-![Front render](images/render_front.png)
--->
+
 
 ## Specs
 
